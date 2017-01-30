@@ -2,7 +2,7 @@
 """
 YOUR HEADER COMMENT HERE
 
-@author: YOUR NAME HERE
+@author: ANA KRISHNAN
 
 """
 
@@ -25,12 +25,23 @@ def get_complement(nucleotide):
 
         nucleotide: a nucleotide (A, C, G, or T) represented as a string
         returns: the complementary nucleotide
+
+        I  don't need more doctests because they are all basically the same.
+
     >>> get_complement('A')
     'T'
     >>> get_complement('C')
     'G'
     """
     # TODO: implement this
+    if nucleotide == 'A':
+        return('T')
+    if nucleotide == 'T':
+        return('A')
+    if nucleotide == 'C':
+        return('G')
+    if nucleotide == 'G':
+        return('C')
     pass
 
 
@@ -46,6 +57,12 @@ def get_reverse_complement(dna):
     'TGAACGCGG'
     """
     # TODO: implement this
+    length = len(dna)-1
+    revcomp = ''
+    while length >= 0:
+        revcomp = revcomp + get_complement(dna[length])
+        length = length - 1
+    return revcomp
     pass
 
 
@@ -63,6 +80,12 @@ def rest_of_ORF(dna):
     'ATGAGA'
     """
     # TODO: implement this
+    x = 3
+    while x < len(dna):
+        if dna[x:x+3] == "TAG" or dna[x:x+3] == "TGA" or dna[x:x+3] == "TAA":
+            return dna[:x]
+        x = x + 3
+    return dna
     pass
 
 
@@ -80,6 +103,16 @@ def find_all_ORFs_oneframe(dna):
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
     # TODO: implement this
+    x = 0
+    ORFs = []
+    while x < len(dna):
+        if dna[x:x+3] == 'ATG':
+            ORF = rest_of_ORF(dna[x:])
+            ORFs.append(ORF)
+            x = x + len(ORF)
+        else:
+            x = x + 3
+    return ORFs
     pass
 
 
@@ -97,6 +130,10 @@ def find_all_ORFs(dna):
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
     # TODO: implement this
+    frameOne = find_all_ORFs_oneframe(dna)
+    frameTwo = find_all_ORFs_oneframe(dna[1:])
+    frameThree = find_all_ORFs_oneframe(dna[2:])
+    return frameOne + frameTwo + frameThree
     pass
 
 
@@ -110,6 +147,9 @@ def find_all_ORFs_both_strands(dna):
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
     # TODO: implement this
+    ORFs = []
+    ORFs = find_all_ORFs(dna) + find_all_ORFs(get_reverse_complement(dna))
+    return ORFs
     pass
 
 
@@ -161,6 +201,11 @@ def gene_finder(dna):
     # TODO: implement this
     pass
 
+
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.run_docstring_examples(get_complement, globals(), verbose=True)
+    doctest.run_docstring_examples(get_reverse_complement, globals(), verbose=True)
+    doctest.run_docstring_examples(rest_of_ORF, globals(), verbose=True)
+    doctest.run_docstring_examples(find_all_ORFs_oneframe, globals(), verbose=True)
+    doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose=True)
