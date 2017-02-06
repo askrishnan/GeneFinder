@@ -5,6 +5,9 @@ YOUR HEADER COMMENT HERE
 @author: ANA KRISHNAN
 
 """
+from load import load_seq
+dna = load_seq("./data/X73525.fa")
+
 
 import random
 from amino_acids import aa, codons, aa_table   # you may find these useful
@@ -159,8 +162,9 @@ def longest_ORF(dna):
     >>> longest_ORF("ATGCGAATGTAGCATCAAA")
     'ATGCTACATTCGCAT'
     """
-    # TODO: implement this
-    pass
+    ORFs = find_all_ORFs_both_strands(dna)
+    longest = max(ORFs, key=len)
+    return longest
 
 
 def longest_ORF_noncoding(dna, num_trials):
@@ -170,8 +174,12 @@ def longest_ORF_noncoding(dna, num_trials):
         dna: a DNA sequence
         num_trials: the number of random shuffles
         returns: the maximum length longest ORF """
-    # TODO: implement this
-    pass
+    for x in range(0, num_trials):
+        dna = shuffle_string(dna)
+        x = x + 1
+    longest = longest_ORF(dna)
+    int = len(longest)
+    return int
 
 
 def coding_strand_to_AA(dna):
@@ -188,8 +196,16 @@ def coding_strand_to_AA(dna):
         >>> coding_strand_to_AA("ATGCCCGCTTT")
         'MPA'
     """
-    # TODO: implement this
-    pass
+    x = 0
+    aminos = ''
+    while x < len(dna):
+        codon = dna[x:x+3]
+        if len(codon) == 3:
+            amino = aa_table[codon]
+            aminos += amino
+        x = x + 3
+    return aminos
+    # hacked
 
 
 def gene_finder(dna):
@@ -198,14 +214,18 @@ def gene_finder(dna):
         dna: a DNA sequence
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
-    # TODO: implement this
-    pass
+    aminoSequence = []
+    threshold = longest_ORF_noncoding(dna, 1500)
+    ORFs = find_all_ORFs_both_strands(dna)
+    for ORF in ORFs:
+        if len(ORF) > threshold:
+            aminoSequence.append(coding_strand_to_AA(ORF))
+    return aminoSequence
+
+
+gene_finder(dna)
 
 
 if __name__ == "__main__":
     import doctest
-    doctest.run_docstring_examples(get_complement, globals(), verbose=True)
-    doctest.run_docstring_examples(get_reverse_complement, globals(), verbose=True)
-    doctest.run_docstring_examples(rest_of_ORF, globals(), verbose=True)
-    doctest.run_docstring_examples(find_all_ORFs_oneframe, globals(), verbose=True)
-    doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose=True)
+    doctest.testmod(verbose=True)
